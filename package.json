@@ -1,0 +1,23 @@
+{
+  "name": "nominasystem",
+  "version": "1.0.0",
+  "description": "Sistema de Nominas con CRUD como proyecto de Programación",
+  "homepage": "https://github.com/sbi447/NominaSystem#readme",
+  "bugs": {
+    "url": "https://github.com/sbi447/NominaSystem/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbi447/NominaSystem.git"
+  },
+  "license": "ISC",
+  "author": "Equipo 2",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
