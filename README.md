@@ -1,4 +1,4 @@
-# NominamicSystem
+# NominaSystem
 Sistema de Nominas como proyecto de Programación II-V
 
 ## Desarrolladores
