@@ -4,6 +4,53 @@
     box-sizing: border-box;
 }
 
+/* Pantalla de login */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+}
+
+.login-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-card h2 {
+    margin-bottom: 1.5rem;
+    color: #1e3c72;
+}
+
+.login-card .form-group {
+    text-align: left;
+    margin-bottom: 1.2rem;
+}
+
+.login-card .btn-primary {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+#logoutBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+/* Asegurar que el contenedor principal tenga posición relativa para el botón de logout */
+.container {
+    position: relative;
+}
+
+
 body {
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);

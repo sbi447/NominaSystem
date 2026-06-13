@@ -126,33 +126,87 @@ export default class UI {
         }
     }
 
-    async editarEmpleado(id) {
-        const empleado = this.empleados.find(emp => emp.id === id);
-        if (!empleado) return;
 
-        this.modoEdicion = true;
-        this.idEditando = id;
-        this.nombreInput.value = empleado.nombre;
-        this.cedulaInput.value = empleado.cedula;
-        this.cargoInput.value = empleado.cargo;
-        this.sueldoInput.value = empleado.sueldo;
-        this.empleadoIdHidden.value = id;
-        this.formTitle.textContent = 'Editar Empleado';
-        this.btnGuardar.textContent = 'Actualizar';
-        this.btnCancelar.style.display = 'inline-block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+async editarEmpleado(id) {
+    const empleado = this.empleados.find(emp => emp.id === id);
+    if (!empleado) return;
+
+    this.modoEdicion = true;
+    this.idEditando = id;
+    this.nombreInput.value = empleado.nombre;
+    this.cedulaInput.value = empleado.cedula;
+    this.cedulaInput.readOnly = true;        // 🔒 Bloquear edición
+    this.cargoInput.value = empleado.cargo;
+    this.sueldoInput.value = empleado.sueldo;
+    this.empleadoIdHidden.value = id;
+    this.formTitle.textContent = 'Editar Empleado';
+    this.btnGuardar.textContent = 'Actualizar';
+    this.btnCancelar.style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+cancelarEdicion() {
+    this.modoEdicion = false;
+    this.idEditando = null;
+    this.form.reset();
+    this.cedulaInput.readOnly = false;        // 🔓 Restaurar
+    this.empleadoIdHidden.value = '';
+    this.formTitle.textContent = 'Registrar Empleado';
+    this.btnGuardar.textContent = 'Guardar';
+    this.btnCancelar.style.display = 'none';
+    this.limpiarError();
+}
+
+async handleSubmit(event) {
+    event.preventDefault();
+    this.limpiarError();
+
+    // Construir objeto con los datos del formulario
+    let datos = {
+        nombre: this.nombreInput.value.trim(),
+        cargo: this.cargoInput.value.trim(),
+        sueldo: parseFloat(this.sueldoInput.value)
+    };
+
+    // Solo incluir cédula si NO estamos en modo edición
+    if (!this.modoEdicion) {
+        datos.cedula = this.cedulaInput.value.trim();
     }
 
-    cancelarEdicion() {
-        this.modoEdicion = false;
-        this.idEditando = null;
-        this.form.reset();
-        this.empleadoIdHidden.value = '';
-        this.formTitle.textContent = 'Registrar Empleado';
-        this.btnGuardar.textContent = 'Guardar';
-        this.btnCancelar.style.display = 'none';
-        this.limpiarError();
+    // Validaciones (nombre, sueldo, cargo siempre; cédula solo si es creación)
+    let errores = [];
+    const errorNombre = Empleado.validarNombre(datos.nombre);
+    if (errorNombre) errores.push(errorNombre);
+    const errorSueldo = Empleado.validarSueldo(datos.sueldo);
+    if (errorSueldo) errores.push(errorSueldo);
+    const errorCargo = Empleado.validarCargo(datos.cargo);
+    if (errorCargo) errores.push(errorCargo);
+
+    if (!this.modoEdicion) {
+        const errorCedula = Empleado.validarCedula(datos.cedula);
+        if (errorCedula) errores.push(errorCedula);
     }
+
+    if (errores.length > 0) {
+        this.mostrarError(errores.join('. '));
+        return;
+    }
+
+    try {
+        if (this.modoEdicion && this.idEditando) {
+            // En edición NO enviamos cédula
+            await actualizarEmpleado(this.idEditando, datos);
+            this.mostrarExito('Empleado actualizado correctamente');
+        } else {
+            await crearEmpleado(datos);
+            this.mostrarExito('Empleado registrado correctamente');
+        }
+        this.cancelarEdicion();
+        await this.cargarEmpleados();
+    } catch (error) {
+        this.mostrarError(error.message);
+    }
+}
 
     async eliminarEmpleado(id) {
         const confirmar = confirm('¿Estás seguro de eliminar este empleado?');

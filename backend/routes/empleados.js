@@ -81,7 +81,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const { nombre, cedula, cargo, sueldo } = req.body;
+        const { nombre, cargo, sueldo } = req.body;
 
         const empleadoExistente = await gestor.obtenerPorId(id);
         if (!empleadoExistente) {
@@ -102,7 +102,6 @@ router.put('/:id', async (req, res) => {
 
         const empleadoActualizado = await gestor.actualizarEmpleado(id, {
             nombre: nombre.trim(),
-            cedula: cedula.trim(),
             cargo: cargo.trim(),
             sueldo: Number(sueldo)
         });

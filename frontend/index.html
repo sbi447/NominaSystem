@@ -8,11 +8,34 @@
     <script src="/js/app.js" type="module" defer></script>
 </head>
 <body>
-    <div class="container">
+    <!-- Pantalla de login -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <h2>Acceso al Sistema de Nómina</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Correo electrónico</label>
+                    <input type="email" id="loginEmail" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+                <div id="loginError" class="error-message" style="display:none;"></div>
+            </form>
+        </div>
+    </div>
+    <!-- Sistema de nómina (inicialmente oculto) -->
+    <div id="appContainer" style="display: none;">
+        <div class="container">
+
+
         <!-- Encabezado -->
         <header class="header">
             <h1>Sistema de Nómina</h1>
-            <p>Gestión de empleados | Recursos Humanos</p>
+            <p>Gestión de empleados</p>
+            <button id="logoutBtn" class="btn btn-secondary" style="position: absolute; top: 20px; right: 20px;">Cerrar sesión</button>
         </header>
 
         <!-- Panel de estadísticas -->
