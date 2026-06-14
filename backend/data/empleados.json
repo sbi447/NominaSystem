@@ -4,20 +4,13 @@
     "nombre": "Sebastian Briceño",
     "cedula": "V-32117825",
     "cargo": "Programador Junior",
-    "sueldo": 1500
+    "sueldo": 29500
   },
   {
     "id": "1780794566547-6xguq",
     "nombre": "Claudia Montilla",
     "cedula": "V-33711805",
     "cargo": "UI Designer",
-    "sueldo": 2500
-  },
-  {
-    "id": "1781374297362-6o0pl",
-    "nombre": "Roberth Idrobo",
-    "cedula": "V-12321351",
-    "cargo": "Conserje",
-    "sueldo": 1000
+    "sueldo": 25000
   }
 ]

@@ -2,3 +2,6 @@ package-lock.json
 node_modules
 .git
 .yaml
+backend/data/
+backend/sessions/
+.env

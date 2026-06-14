@@ -3,14 +3,14 @@ const router = express.Router();
 const GestorArchivo = require('../models/GestorArchivo');
 const gestor = new GestorArchivo();
 
-// Salario mínimo (ejemplo 1000 unidades monetarias)
+// Salario mínimo en Bolívares
 const SALARIO_MINIMO = 1000;
 
-// Función de validación de empleado
-function validarEmpleado(datos, esCreacion = true, idExcluir = null) {
+// Función de validación de empleado (para CREACIÓN)
+function validarEmpleado(datos) {
     const errores = [];
 
-    // Nombre: no vacío y debe tener al menos dos palabras (nombre y apellido)
+    // Nombre: no vacío y debe tener al menos dos palabras
     if (!datos.nombre || datos.nombre.trim() === '') {
         errores.push('El nombre completo es obligatorio');
     } else if (datos.nombre.trim().split(/\s+/).length < 2) {
@@ -27,10 +27,36 @@ function validarEmpleado(datos, esCreacion = true, idExcluir = null) {
     if (datos.sueldo === undefined || datos.sueldo === null || isNaN(Number(datos.sueldo))) {
         errores.push('El sueldo debe ser un número válido');
     } else if (Number(datos.sueldo) < SALARIO_MINIMO) {
-        errores.push(`El sueldo debe ser igual o superior al salario mínimo de ${SALARIO_MINIMO}`);
+        errores.push(`El sueldo debe ser igual o superior al salario mínimo de ${SALARIO_MINIMO} Bs`);
     }
 
-    // Cargo: no vacío (opcional pero recomendado)
+    // Cargo: no vacío
+    if (!datos.cargo || datos.cargo.trim() === '') {
+        errores.push('El cargo es obligatorio');
+    }
+
+    return errores;
+}
+
+// Función de validación para ACTUALIZACIÓN (sin cédula)
+function validarActualizacion(datos) {
+    const errores = [];
+
+    // Nombre: no vacío y debe tener al menos dos palabras
+    if (!datos.nombre || datos.nombre.trim() === '') {
+        errores.push('El nombre completo es obligatorio');
+    } else if (datos.nombre.trim().split(/\s+/).length < 2) {
+        errores.push('El nombre debe incluir al menos nombre y apellido');
+    }
+
+    // Sueldo: número >= salario mínimo
+    if (datos.sueldo === undefined || datos.sueldo === null || isNaN(Number(datos.sueldo))) {
+        errores.push('El sueldo debe ser un número válido');
+    } else if (Number(datos.sueldo) < SALARIO_MINIMO) {
+        errores.push(`El sueldo debe ser igual o superior al salario mínimo de ${SALARIO_MINIMO} Bs`);
+    }
+
+    // Cargo: no vacío
     if (!datos.cargo || datos.cargo.trim() === '') {
         errores.push('El cargo es obligatorio');
     }
@@ -44,6 +70,7 @@ router.get('/', async (req, res) => {
         const empleados = await gestor.obtenerTodos();
         res.json(empleados);
     } catch (error) {
+        console.error('Error GET empleados:', error);
         res.status(500).json({ error: 'Error al obtener empleados' });
     }
 });
@@ -73,31 +100,28 @@ router.post('/', async (req, res) => {
         });
         res.status(201).json(nuevoEmpleado);
     } catch (error) {
+        console.error('Error POST empleado:', error);
         res.status(500).json({ error: 'Error al crear empleado' });
     }
 });
 
-// PUT /api/empleados/:id - Actualizar empleado
+// PUT /api/empleados/:id - Actualizar empleado (NO permite cambiar cédula)
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const { nombre, cargo, sueldo } = req.body;
+
+        console.log('Actualizando empleado:', { id, nombre, cargo, sueldo });
 
         const empleadoExistente = await gestor.obtenerPorId(id);
         if (!empleadoExistente) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
 
-        // Validaciones (permitir que algunos campos no cambien, pero se envían todos)
-        const errores = validarEmpleado({ nombre, cedula, cargo, sueldo }, false, id);
+        // Validaciones SOLO para campos editables (sin cédula)
+        const errores = validarActualizacion({ nombre, cargo, sueldo });
         if (errores.length > 0) {
             return res.status(400).json({ errores });
-        }
-
-        // Verificar unicidad de cédula excluyendo el propio empleado
-        const esUnica = await gestor.validarCedulaUnica(cedula, id);
-        if (!esUnica) {
-            return res.status(400).json({ errores: ['La cédula ya está registrada por otro empleado'] });
         }
 
         const empleadoActualizado = await gestor.actualizarEmpleado(id, {
@@ -105,9 +129,11 @@ router.put('/:id', async (req, res) => {
             cargo: cargo.trim(),
             sueldo: Number(sueldo)
         });
+        
         res.json(empleadoActualizado);
     } catch (error) {
-        res.status(500).json({ error: 'Error al actualizar empleado' });
+        console.error('Error en PUT /api/empleados/:id:', error);
+        res.status(500).json({ error: 'Error al actualizar empleado: ' + error.message });
     }
 });
 
@@ -115,13 +141,23 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
+        console.log('Eliminando empleado con ID:', id);
+        
+        const empleadoExistente = await gestor.obtenerPorId(id);
+        if (!empleadoExistente) {
+            return res.status(404).json({ error: 'Empleado no encontrado' });
+        }
+        
         const eliminado = await gestor.eliminarEmpleado(id);
         if (!eliminado) {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
+        
+        // Responder con éxito (sin afectar la sesión)
         res.status(204).send();
     } catch (error) {
-        res.status(500).json({ error: 'Error al eliminar empleado' });
+        console.error('Error DELETE empleado:', error);
+        res.status(500).json({ error: 'Error al eliminar empleado: ' + error.message });
     }
 });
 

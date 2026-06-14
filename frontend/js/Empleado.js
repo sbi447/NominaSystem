@@ -24,7 +24,7 @@ export default class Empleado {
     static validarSueldo(sueldo, salarioMinimo = 1000) {
         const num = Number(sueldo);
         if (isNaN(num)) return 'El sueldo debe ser un número';
-        if (num < salarioMinimo) return `El sueldo mínimo es ${salarioMinimo}`;
+        if (num < salarioMinimo) return `El sueldo mínimo es ${salarioMinimo} Bs`;
         return null;
     }
 

@@ -11,17 +11,26 @@
     "url": "git+https://github.com/sbi447/NominaSystem.git"
   },
   "license": "MIT",
+  "keywords": [
+    "nomina",
+    "rrhh",
+    "crud",
+    "express",
+    "javascript"
+  ],
   "author": "Equipo 2",
   "type": "commonjs",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
+    "dev": "nodemon backend/server.js --ignore backend/data/ --ignore *.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
-    "express-session": "^1.19.0"
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

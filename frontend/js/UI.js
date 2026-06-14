@@ -40,44 +40,73 @@ export default class UI {
     }
 
     async cargarEmpleados() {
-        try {
-            this.empleados = await obtenerEmpleados();
-            this.renderizarTabla();
-            this.actualizarEstadisticas();
-        } catch (error) {
-            this.mostrarError('Error al cargar empleados: ' + error.message);
-        }
-    }
-
-    renderizarTabla() {
-        const empleadosFiltrados = this.filtrarEmpleados();
-        if (empleadosFiltrados.length === 0) {
-            this.tablaBody.innerHTML = '<tr class="fila-vacia"><td colspan="5">No hay empleados registrados</td></tr>';
+    try {
+        this.empleados = await obtenerEmpleados();
+        this.renderizarTabla();
+        this.actualizarEstadisticas();
+        
+        // Asegurar que el formulario esté habilitado después de cargar
+        this.habilitarFormulario(true);
+        
+    } catch (error) {
+        console.error('Error al cargar empleados:', error);
+        if (error.message === 'Sesión expirada') {
+            // No hacer nada, api.js ya maneja la redirección
             return;
         }
-
-        this.tablaBody.innerHTML = empleadosFiltrados.map(emp => `
-            <tr>
-                <td>${this.escapeHtml(emp.nombre)}</td>
-                <td>${this.escapeHtml(emp.cedula)}</td>
-                <td>${this.escapeHtml(emp.cargo)}</td>
-                <td>${Number(emp.sueldo).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</td>
-                <td>
-                    <button class="btn-edit" data-id="${emp.id}">✏️ Editar</button>
-                    <button class="btn-delete" data-id="${emp.id}">🗑️ Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
-
-        // Agregar eventos a botones
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', (e) => this.editarEmpleado(btn.dataset.id));
-        });
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', (e) => this.eliminarEmpleado(btn.dataset.id));
-        });
+        this.mostrarError('Error al cargar empleados: ' + error.message);
+        this.habilitarFormulario(false);
+        }
     }
 
+/* Método auxiliar para habilitar/deshabilitar el formulario */
+habilitarFormulario(habilitado) {
+    const inputs = [this.nombreInput, this.cedulaInput, this.cargoInput, this.sueldoInput];
+    const botones = [this.btnGuardar, this.btnCancelar];
+    
+    inputs.forEach(input => {
+        if (input) input.disabled = !habilitado;
+    });
+    
+    botones.forEach(boton => {
+        if (boton) boton.disabled = !habilitado;
+    });
+}
+
+    renderizarTabla() {
+    const empleadosFiltrados = this.filtrarEmpleados();
+    
+    if (empleadosFiltrados.length === 0) {
+        this.tablaBody.innerHTML = '<tr class="fila-vacia"><td colspan="5">No hay empleados registrados</td></tr>';
+        return;
+    }
+
+    this.tablaBody.innerHTML = empleadosFiltrados.map(emp => `
+        <tr data-id="${emp.id}">
+            <td>${this.escapeHtml(emp.nombre)}</td>
+            <td>${this.escapeHtml(emp.cedula)}</td>
+            <td>${this.escapeHtml(emp.cargo)}</td>
+            <td>${Number(emp.sueldo).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs</td>
+            <td>
+                <button class="btn-edit" data-id="${emp.id}">✏️ Editar</button>
+                <button class="btn-delete" data-id="${emp.id}">🗑️ Eliminar</button>
+            </td>
+        </tr>
+    `).join('');
+
+    // Agregar eventos a botones - usar event delegation para mejor rendimiento
+    this.tablaBody.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.removeEventListener('click', this.boundEditHandler);
+        this.boundEditHandler = (e) => this.editarEmpleado(btn.dataset.id);
+        btn.addEventListener('click', this.boundEditHandler);
+    });
+    
+    this.tablaBody.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.removeEventListener('click', this.boundDeleteHandler);
+        this.boundDeleteHandler = (e) => this.eliminarEmpleado(btn.dataset.id);
+        btn.addEventListener('click', this.boundDeleteHandler);
+    });
+}
     filtrarEmpleados() {
         if (!this.filtroTexto) return this.empleados;
         return this.empleados.filter(emp =>
@@ -90,7 +119,7 @@ export default class UI {
         const total = this.empleados.length;
         const sumaSueldos = this.empleados.reduce((acc, emp) => acc + Number(emp.sueldo), 0);
         this.totalEmpleadosSpan.textContent = total;
-        this.gastoTotalSpan.textContent = sumaSueldos.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+        this.gastoTotalSpan.textContent = sumaSueldos.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Bs';
     }
 
     async handleSubmit(event) {
@@ -135,7 +164,13 @@ async editarEmpleado(id) {
     this.idEditando = id;
     this.nombreInput.value = empleado.nombre;
     this.cedulaInput.value = empleado.cedula;
-    this.cedulaInput.readOnly = true;        // 🔒 Bloquear edición
+
+    // 🔒 Deshabilitar visual y funcionalmente el campo cédula
+    this.cedulaInput.readOnly = true;
+    this.cedulaInput.style.backgroundColor = '#f1f5f9';
+    this.cedulaInput.style.color = '#64748b';
+    this.cedulaInput.style.cursor = 'not-allowed';
+
     this.cargoInput.value = empleado.cargo;
     this.sueldoInput.value = empleado.sueldo;
     this.empleadoIdHidden.value = id;
@@ -149,7 +184,13 @@ cancelarEdicion() {
     this.modoEdicion = false;
     this.idEditando = null;
     this.form.reset();
-    this.cedulaInput.readOnly = false;        // 🔓 Restaurar
+
+    // 🔓 Restaurar campo cédula a su estado normal
+    this.cedulaInput.readOnly = false;
+    this.cedulaInput.style.backgroundColor = '';
+    this.cedulaInput.style.color = '';
+    this.cedulaInput.style.cursor = '';
+
     this.empleadoIdHidden.value = '';
     this.formTitle.textContent = 'Registrar Empleado';
     this.btnGuardar.textContent = 'Guardar';
@@ -208,19 +249,52 @@ async handleSubmit(event) {
     }
 }
 
-    async eliminarEmpleado(id) {
-        const confirmar = confirm('¿Estás seguro de eliminar este empleado?');
-        if (!confirmar) return;
+    
+async eliminarEmpleado(id) {
+    // Obtener el nombre del empleado para confirmación
+    const empleado = this.empleados.find(emp => emp.id === id);
+    const nombreEmpleado = empleado ? empleado.nombre : 'este empleado';
+    
+    const confirmar = confirm(`¿Estás seguro de eliminar a "${nombreEmpleado}"?`);
+    if (!confirmar) return;
 
-        try {
-            await eliminarEmpleado(id);
-            this.mostrarExito('Empleado eliminado');
-            await this.cargarEmpleados();
-        } catch (error) {
-            this.mostrarError(error.message);
+    // Deshabilitar temporalmente todos los botones de eliminar para evitar operaciones múltiples
+    const allDeleteButtons = document.querySelectorAll('.btn-delete');
+    allDeleteButtons.forEach(btn => {
+        btn.disabled = true;
+    });
+
+    try {
+        await eliminarEmpleado(id);
+        this.mostrarExito(`✅ "${nombreEmpleado}" ha sido eliminado correctamente`);
+        
+        // Recargar la lista de empleados
+        await this.cargarEmpleados();
+        
+        // IMPORTANTE: Si estábamos en modo edición, cancelarlo
+        if (this.modoEdicion) {
+            this.cancelarEdicion();
         }
+        
+    } catch (error) {
+        console.error('Error al eliminar:', error);
+        
+        // Si el error es por sesión expirada, no mostrar mensaje de error adicional
+        if (error.message === 'Sesión expirada') {
+            return;
+        }
+        
+        this.mostrarError(`❌ No se pudo eliminar: ${error.message}`);
+    } finally {
+        // Restaurar botones si aún existen en el DOM
+        setTimeout(() => {
+            const buttons = document.querySelectorAll('.btn-delete');
+            buttons.forEach(btn => {
+                btn.disabled = false;
+            });
+        }, 500);
     }
-
+}
     mostrarError(mensaje) {
         this.errorDiv.textContent = mensaje;
         this.errorDiv.style.display = 'block';
