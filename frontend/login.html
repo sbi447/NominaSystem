@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NominaSystem</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h2>Acceso al Sistema de Nómina</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Correo electrónico</label>
+                    <input type="email" id="loginEmail" required autocomplete="email">
+                </div>
+                <div class="form-group password-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" required autocomplete="current-password">
+                        <button type="button" id="togglePassword" class="toggle-password-btn" title="Mostrar contraseña">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Ingresar</button>
+                <div id="loginError" class="error-message" style="display:none;"></div>
+            </form>
+        </div>
+    </div>
+    <script src="/js/login.js" type="module" defer></script>
+</body>
+</html>

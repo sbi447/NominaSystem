@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NominaSystem</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;500;600;700&display=swap" rel="stylesheet">
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Menú lateral -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>NominaSystem</h2>
+                <p>RRHH</p>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn" data-view="estadisticas">📊 Estadísticas</button>
+                <button class="nav-btn active" data-view="empleados">👥 Empleados</button>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="nightModeBtn" class="control-btn" title="Modo nocturno">🌙</button>
+                <button id="visualProtectionBtn" class="control-btn" title="Protección visual">👁️</button>
+                <button id="logoutBtn" class="btn btn-secondary btn-full">Cerrar sesión</button>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <div id="view-container" class="view-container">
+                <!-- Aquí se cargarán las vistas -->
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/dashboard.js" type="module" defer></script>
+</body>
+</html>

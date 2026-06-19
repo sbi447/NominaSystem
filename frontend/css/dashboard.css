@@ -1,0 +1,351 @@
+/* ============================================
+   LAYOUT PRINCIPAL
+   ============================================ */
+.dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f1f5f9;
+    transition: background 0.3s;
+}
+
+/* ============================================
+   SIDEBAR (modo claro)
+   ============================================ */
+.sidebar {
+    width: 240px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.sidebar-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+.sidebar-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+.sidebar-header p {
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.sidebar-nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.nav-btn {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.nav-btn:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+.nav-btn.active {
+    background: #e2e8f0;
+    color: #1e3c72;
+    font-weight: 600;
+}
+
+.sidebar-footer {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.control-btn {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 2rem;
+    padding: 0.5rem 1rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-align: center;
+}
+.control-btn:hover {
+    background: #e2e8f0;
+}
+#logoutBtn {
+    margin-top: 0.5rem;
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+
+
+/* ============================================
+   MODO OSCURO (se activa con body.night-mode)
+   ============================================ */
+
+/* Fondo principal y contenedores */
+body.night-mode {
+    background: #1A1A1A;
+}
+body.night-mode .dashboard-layout {
+    background: #1A1A1A;
+}
+body.night-mode .sidebar {
+    background: #222222;
+    border-right-color: #4A4A4A;
+}
+body.night-mode .sidebar-header h2 {
+    background: linear-gradient(135deg, #D4AF37, #C5A059);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+body.night-mode .sidebar-header p {
+    color: #4A4A4A;
+}
+body.night-mode .nav-btn {
+    color: #4A4A4A;
+}
+body.night-mode .nav-btn:hover {
+    background: #2A2A2A;
+    color: #E0E0E0;
+}
+body.night-mode .nav-btn.active {
+    background: #2A2A2A;
+    color: #D4AF37;
+    border-left: 3px solid #D4AF37;
+}
+body.night-mode .control-btn {
+    background: #2A2A2A;
+    border-color: #4A4A4A;
+    color: #E0E0E0;
+}
+body.night-mode .control-btn:hover {
+    background: #4A4A4A;
+}
+body.night-mode #logoutBtn {
+    background: #4A4A4A;
+    color: #E0E0E0;
+}
+body.night-mode #logoutBtn:hover {
+    background: #E5A96E;
+    color: #1A1A1A;
+}
+
+/* Vista contenedor */
+body.night-mode .main-content {
+    background: #1A1A1A;
+}
+body.night-mode .view-container {
+    background: #222222;
+    color: #E0E0E0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+body.night-mode .view-container h2 {
+    color: #D4AF37;
+}
+
+/* Tablas */
+body.night-mode .table-container {
+    background: #222222;
+    border-color: #4A4A4A;
+}
+body.night-mode th {
+    background: #2A2A2A;
+    color: #D4AF37;
+    border-bottom-color: #4A4A4A;
+}
+body.night-mode td {
+    color: #E0E0E0;
+    border-bottom-color: #2A2A2A;
+}
+body.night-mode tr:hover td {
+    background-color: #2A2A2A;
+}
+body.night-mode .fila-vacia td {
+    color: #4A4A4A;
+}
+
+/* Buscador */
+body.night-mode .search-container input {
+    background: #2A2A2A;
+    border-color: #4A4A4A;
+    color: #E0E0E0;
+}
+body.night-mode .search-container input::placeholder {
+    color: #4A4A4A;
+}
+body.night-mode .search-container input:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Tarjetas de estadísticas */
+body.night-mode .stat-card {
+    background: #222222;
+    border-color: #4A4A4A;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+body.night-mode .stat-label {
+    color: #4A4A4A;
+}
+body.night-mode .stat-value {
+    color: #E5A96E;
+}
+
+/* Formularios dentro de vistas */
+body.night-mode .form-group label {
+    color: #E0E0E0;
+}
+body.night-mode .form-group input {
+    background: #2A2A2A;
+    border-color: #4A4A4A;
+    color: #E0E0E0;
+}
+body.night-mode .form-group input:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+body.night-mode .form-actions .btn-secondary {
+    background: #4A4A4A;
+    color: #E0E0E0;
+}
+body.night-mode .form-actions .btn-secondary:hover {
+    background: #666;
+}
+
+/* Botones dentro de tablas */
+body.night-mode .btn-edit {
+    background: #4A4A4A;
+    color: #D4AF37;
+}
+body.night-mode .btn-edit:hover {
+    background: #D4AF37;
+    color: #1A1A1A;
+}
+body.night-mode .btn-delete {
+    background: #4A4A4A;
+    color: #E5A96E;
+}
+body.night-mode .btn-delete:hover {
+    background: #E5A96E;
+    color: #1A1A1A;
+}
+
+/* Botón primario en formularios */
+body.night-mode .btn-primary {
+    background: linear-gradient(135deg, #D4AF37, #C5A059);
+    color: #1A1A1A;
+}
+body.night-mode .btn-primary:hover {
+    box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);
+}
+
+/* ============================================
+   PROTECCIÓN VISUAL (se superpone a cualquier modo)
+   ============================================ */
+body.visual-protection {
+    filter: brightness(0.85) contrast(0.95) sepia(0.05);
+}
+body.visual-protection .sidebar,
+body.visual-protection .main-content,
+body.visual-protection .view-container,
+body.visual-protection button,
+body.visual-protection input {
+    filter: none;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+        padding: 1rem;
+    }
+    .main-content {
+        padding: 1rem;
+    }
+    .view-container {
+        padding: 1rem;
+    }
+}
+@media (max-width: 600px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    body.night-mode .sidebar {
+        border-bottom-color: #4A4A4A;
+    }
+    .sidebar-header {
+        margin-bottom: 0;
+        flex: 0 0 auto;
+    }
+    .sidebar-nav {
+        flex-direction: row;
+        gap: 0.25rem;
+        flex: 1;
+        justify-content: center;
+    }
+    .nav-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+        gap: 0.3rem;
+    }
+    .sidebar-footer {
+        flex-direction: row;
+        margin-top: 0;
+        gap: 0.25rem;
+    }
+    .control-btn {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.9rem;
+    }
+    #logoutBtn {
+        margin-top: 0;
+    }
+}

@@ -1,0 +1,27 @@
+<div class="view-empleado-form">
+    <h2 id="formTitle">Registrar Empleado</h2>
+    <form id="empleadoForm">
+        <input type="hidden" id="empleadoId" value="">
+        <div class="form-group">
+            <label for="nombre">Nombre Completo</label>
+            <input type="text" id="nombre" placeholder="Ej. Ana Rodríguez" required>
+        </div>
+        <div class="form-group">
+            <label for="cedula">Cédula de Identidad</label>
+            <input type="text" id="cedula" placeholder="V-12345678 o E-12345678" required>
+        </div>
+        <div class="form-group">
+            <label for="cargo">Cargo</label>
+            <input type="text" id="cargo" placeholder="Ej. Desarrollador Frontend" required>
+        </div>
+        <div class="form-group">
+            <label for="sueldo">Sueldo Mensual</label>
+            <input type="number" id="sueldo" step="0.01" placeholder="Mínimo 1000 Bs" required>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar</button>
+            <button type="button" class="btn btn-secondary" id="btnCancelar" style="display:none;">Cancelar</button>
+        </div>
+    </form>
+    <div id="mensajeError" class="error-message"></div>
+</div>

@@ -1,0 +1,25 @@
+<div class="view-empleados">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2>👥 Gestión de Empleados</h2>
+        <button id="btnAgregarEmpleado" class="btn btn-primary">➕ Agregar empleado</button>
+    </div>
+    <div class="search-container">
+        <input type="text" id="buscador" placeholder="🔍 Buscar por cédula o nombre...">
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cédula</th>
+                    <th>Cargo</th>
+                    <th>Sueldo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaBody">
+                <tr class="fila-vacia"><td colspan="5">Cargando empleados...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>

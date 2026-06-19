@@ -115,33 +115,20 @@ function mostrarNotificacion(mensaje) {
     }, 2000);
 }
 
-async function verificarSesion() {
+(async () => {
     try {
-        const response = await fetch('/api/check-session');
-        const data = await response.json();
-        
+        const res = await fetch('/api/check-session');
+        const data = await res.json();
         if (data.loggedIn) {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
-            
-            // Aplicar modos guardados después de mostrar el contenedor
-            aplicarModosGuardados();
-            setupModos();
-            
-            if (!uiInstance) {
-                uiInstance = new UI();
-            }
+            window.location.href = '/dashboard.html';
         } else {
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('appContainer').style.display = 'none';
-            if (uiInstance) {
-                uiInstance = null;
-            }
+            window.location.href = '/login.html';
         }
     } catch (error) {
         console.error('Error al verificar sesión:', error);
+        window.location.href = '/login.html';
     }
-}
+})();
 
 function setupLogin() {
     const loginForm = document.getElementById('loginForm');

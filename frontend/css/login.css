@@ -1,0 +1,104 @@
+/* Pantalla de login (modo claro por defecto) */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+    transition: background 0.3s;
+}
+
+.login-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 2rem;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.login-card h2 {
+    margin-bottom: 1.5rem;
+    color: #1e3c72;
+}
+
+.login-card .form-group {
+    text-align: left;
+}
+
+/* Toggle de contraseña */
+.password-group {
+    position: relative;
+}
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.password-input-wrapper input {
+    padding-right: 45px;
+}
+.toggle-password-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 8px !important;
+    margin: 0 !important;
+    color: #64748b;
+    transition: color 0.2s;
+    z-index: 2;
+    width: auto;
+    height: auto;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.toggle-password-btn:hover {
+    color: #1e3c72;
+}
+
+/* Modo oscuro para login (se aplica con clase en body) */
+body.night-mode .login-container {
+    background: #1A1A1A;
+}
+body.night-mode .login-card {
+    background: #222222;
+    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.8);
+}
+body.night-mode .login-card h2 {
+    color: #D4AF37;
+}
+body.night-mode .login-card .form-group label {
+    color: #E0E0E0;
+}
+body.night-mode .login-card .form-group input {
+    background: #2A2A2A;
+    border-color: #4A4A4A;
+    color: #E0E0E0;
+}
+body.night-mode .login-card .form-group input:focus {
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+body.night-mode .toggle-password-btn {
+    color: #4A4A4A;
+}
+body.night-mode .toggle-password-btn:hover {
+    color: #D4AF37;
+}
+body.night-mode .login-card .btn-primary {
+    background: linear-gradient(135deg, #D4AF37, #C5A059);
+    color: #1A1A1A;
+}
+body.night-mode .login-card .btn-primary:hover {
+    box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);
+}

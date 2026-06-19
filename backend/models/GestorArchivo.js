@@ -35,14 +35,17 @@ class GestorArchivo {
     }
 
     async crearEmpleado(empleadoData) {
-        const empleados = await this.leerEmpleados();
-        // Generar ID único (timestamp + random)
-        const nuevoId = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 5);
-        const nuevoEmpleado = { id: nuevoId, ...empleadoData };
-        empleados.push(nuevoEmpleado);
-        await this.escribirEmpleados(empleados);
-        return nuevoEmpleado;
-    }
+    const empleados = await this.leerEmpleados();
+    const nuevoId = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 5);
+    const nuevoEmpleado = {
+        id: nuevoId,
+        ...empleadoData,
+        fecha: new Date().toISOString() // ← Agregar fecha de creación
+    };
+    empleados.push(nuevoEmpleado);
+    await this.escribirEmpleados(empleados);
+    return nuevoEmpleado;
+}
 
     async actualizarEmpleado(id, datosActualizados) {
         const empleados = await this.leerEmpleados();

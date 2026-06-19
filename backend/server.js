@@ -37,8 +37,8 @@ const verificarToken = (req, res, next) => {
 app.post('/api/login', (req, res) => {
     try {
         const { email, password } = req.body;
-        const validEmail = 'sistemadenomina4@gmail.com';
-        const validPassword = 'linuxesmejorquewindows11';
+        const validEmail = 'sysnom@gmail.com';
+        const validPassword = 'linux123';
 
         console.log('Intento de login:', email);
 
