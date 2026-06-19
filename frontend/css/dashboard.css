@@ -133,10 +133,10 @@ body.night-mode .sidebar-header h2 {
     color: transparent;
 }
 body.night-mode .sidebar-header p {
-    color: #4A4A4A;
+    color: #BEBEBE;
 }
 body.night-mode .nav-btn {
-    color: #4A4A4A;
+    color: #BEBEBE;
 }
 body.night-mode .nav-btn:hover {
     background: #2A2A2A;
@@ -219,7 +219,7 @@ body.night-mode .stat-card {
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 body.night-mode .stat-label {
-    color: #4A4A4A;
+    color: #BEBEBE;
 }
 body.night-mode .stat-value {
     color: #E5A96E;
