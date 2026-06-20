@@ -21,14 +21,13 @@ html, body {
     box-sizing: border-box;
     
     /* CAMBIO A IMAGEN DE FONDO */
-    background-image: url('../img/login-dorado.webp') !important; /* Ajusta la ruta a tu carpeta de imágenes */
-    background-size: cover !important; /* Estira la imagen para cubrir toda la pantalla */
-    background-position: center !important; /* Centra la imagen */
+    background-image: url('../img/login-dorado.webp') !important;
+    background-size: cover !important;
+    background-position: center !important;
     background-repeat: no-repeat !important;
 }
 
-/* CAPA SUPERPUESTA (OVERLAY): Aplica un filtro oscuro sutil sobre la imagen 
-   para asegurar que los textos e inputs sigan teniendo un contraste perfecto */
+/* CAPA SUPERPUESTA (OVERLAY):*/
 .login-container::before {
     content: "";
     position: absolute;
