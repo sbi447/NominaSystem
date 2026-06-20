@@ -10,6 +10,19 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div id="toast-container"></div>
+
+<div id="confirm-modal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>¿Estás seguro?</h3>
+        <p id="confirm-modal-msg">¿Deseas eliminar este registro de forma permanente?</p>
+        <div class="modal-botones">
+            <button id="btn-modal-cancelar" class="modal-btn modal-btn-cancelar">Cancelar</button>
+            <button id="btn-modal-confirmar" class="modal-btn modal-btn-confirmar">Eliminar</button>
+        </div>
+    </div>
+</div>
+
     <div class="dashboard-layout">
         <!-- Menú lateral -->
         <aside class="sidebar">

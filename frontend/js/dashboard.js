@@ -66,7 +66,7 @@ function initEstadisticas(container) {
     if (uiInstance && uiInstance.empleados) {
         const empleados = uiInstance.empleados;
         const total = empleados.length;
-        const suma = empleados.reduce((acc, e) => acc + Number(e.sueldo), 0);
+        const suma = empleados.reduce((acc, e) => acc + (Number(e.sueldo) || 0), 0);
         const totalSpan = container.querySelector('#totalEmpleados');
         const gastoSpan = container.querySelector('#gastoTotal');
         if (totalSpan) totalSpan.textContent = total;

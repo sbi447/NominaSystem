@@ -1,45 +1,129 @@
-/* Pantalla de login (modo claro por defecto) */
+/* ==========================================================================
+   PANTALLA DE LOGIN - CONFIGURACIÓN CON IMAGEN DE FONDO PREMIUM
+   ========================================================================== */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #121212; /* Fondo de seguridad oscuro */
+}
+
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
-    transition: background 0.3s;
-}
-
-.login-card {
-    background: white;
-    padding: 2.5rem;
-    border-radius: 2rem;
-    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
     width: 100%;
-    max-width: 400px;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    
+    /* CAMBIO A IMAGEN DE FONDO */
+    background-image: url('../img/login-dorado.webp') !important; /* Ajusta la ruta a tu carpeta de imágenes */
+    background-size: cover !important; /* Estira la imagen para cubrir toda la pantalla */
+    background-position: center !important; /* Centra la imagen */
+    background-repeat: no-repeat !important;
+}
+
+/* CAPA SUPERPUESTA (OVERLAY): Aplica un filtro oscuro sutil sobre la imagen 
+   para asegurar que los textos e inputs sigan teniendo un contraste perfecto */
+.login-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(18, 18, 18, 0.85) 0%, rgba(26, 26, 26, 0.2) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* TARJETA DE ACCESO ESTILO CARBÓN MATE */
+.login-card {
+    background: rgba(30, 30, 30, 0.9) !important; /* Un poco de transparencia para integrarse con el fondo */
+    padding: 3rem 2.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.25); 
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 380px;
     text-align: center;
-    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    backdrop-filter: blur(8px); /* Aplica un ligero desenfoque al fondo detrás de la tarjeta */
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
 }
 
+.login-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* TÍTULO EN GRADIENTE METÁLICO (Oro / Champán) */
 .login-card h2 {
-    margin-bottom: 1.5rem;
-    color: #1e3c72;
+    margin: 0 0 2rem 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #D4AF37 0%, #FFF3B0 25%, #C5A059 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
 }
 
+/* GRUPOS DEL FORMULARIO */
 .login-card .form-group {
     text-align: left;
+    margin-bottom: 1.25rem;
 }
 
-/* Toggle de contraseña */
-.password-group {
-    position: relative;
+.login-card .form-group label {
+    color: #a0aec0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
+
+.login-card .form-group input {
+    width: 100%;
+    background: #242424 !important;
+    border: 1px solid #333333;
+    color: #f8fafc;
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.login-card .form-group input:focus {
+    outline: none;
+    border-color: #D4AF37;
+    background: #2a2a2a !important;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+/* ENVOLTORIO DE CONTRASEÑA */
 .password-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
 }
+
 .password-input-wrapper input {
-    padding-right: 45px;
+    padding-right: 42px !important;
 }
+
 .toggle-password-btn {
     position: absolute;
     right: 12px;
@@ -48,57 +132,48 @@
     background: transparent !important;
     border: none !important;
     cursor: pointer;
-    font-size: 1.2rem;
-    padding: 8px !important;
+    font-size: 1rem;
+    padding: 4px !important;
     margin: 0 !important;
-    color: #64748b;
-    transition: color 0.2s;
+    color: #718096;
     z-index: 2;
-    width: auto;
-    height: auto;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.toggle-password-btn:hover {
-    color: #1e3c72;
 }
 
-/* Modo oscuro para login (se aplica con clase en body) */
-body.night-mode .login-container {
-    background: #1A1A1A;
-}
-body.night-mode .login-card {
-    background: #222222;
-    box-shadow: 0 20px 35px -10px rgba(0,0,0,0.8);
-}
-body.night-mode .login-card h2 {
+.toggle-password-btn:hover {
     color: #D4AF37;
 }
-body.night-mode .login-card .form-group label {
-    color: #E0E0E0;
+
+/* BOTÓN DE ACCIÓN PRINCIPAL */
+.login-card .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, #D4AF37 0%, #C5A059 100%) !important;
+    color: #121212 !important;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 0.85rem;
+    font-size: 0.95rem;
+    margin-top: 0.75rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+    transition: all 0.2s ease;
 }
-body.night-mode .login-card .form-group input {
-    background: #2A2A2A;
-    border-color: #4A4A4A;
-    color: #E0E0E0;
+
+.login-card .btn-primary:hover {
+    background: linear-gradient(135deg, #E5BA48 0%, #D4AF37 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(212, 175, 55, 0.25);
 }
-body.night-mode .login-card .form-group input:focus {
-    border-color: #D4AF37;
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+
+/* MENSAJES DE ERROR */
+.login-card .error-message {
+    color: #fc8181;
+    background: rgba(252, 129, 129, 0.1);
+    border: 1px solid rgba(252, 129, 129, 0.2);
+    font-size: 0.85rem;
+    padding: 0.65rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    font-weight: 500;
 }
-body.night-mode .toggle-password-btn {
-    color: #4A4A4A;
-}
-body.night-mode .toggle-password-btn:hover {
-    color: #D4AF37;
-}
-body.night-mode .login-card .btn-primary {
-    background: linear-gradient(135deg, #D4AF37, #C5A059);
-    color: #1A1A1A;
-}
-body.night-mode .login-card .btn-primary:hover {
-    box-shadow: 0 6px 14px rgba(212, 175, 55, 0.3);
-}
+

@@ -100,6 +100,166 @@
     margin-top: 0.5rem;
 }
 
+/* ==========================================
+   TOASTS (NOTIFICACIONES FLOTANTES CON SOPORTE DARK/LIGHT)
+   ========================================== */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast-alerta {
+    min-width: 300px;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid var(--color-primary, #3b82f6);
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    opacity: 0;
+    
+    /* Variables dinámicas según el fondo general */
+    background-color: var(--bg-card, #ffffff);
+    color: var(--text-main, #1e293b);
+}
+
+body.night-mode .toast-alerta {
+    background-color: #1e293b;
+    color: #f8fafc;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.toast-alerta.mostrar {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Colores de acento basados en estados clásicos */
+.toast-alerta.exito { border-left-color: #10b981; }
+.toast-alerta.error { border-left-color: #ef4444; }
+.toast-alerta.info { border-left-color: #3b82f6; }
+
+/* ==========================================
+   MODAL DE CONFIRMACIÓN ADAPTATIVO
+   ========================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+body.night-mode .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-overlay.activo {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    padding: 24px;
+    border-radius: 8px;
+    max-width: 380px;
+    width: 90%;
+    transform: scale(0.95);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    
+    background-color: var(--bg-card, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+}
+
+body.night-mode .modal-box {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+.modal-overlay.activo .modal-box {
+    transform: scale(1);
+}
+
+.modal-box h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: var(--text-main, #1e293b);
+}
+
+body.night-mode .modal-box h3 {
+    color: #f8fafc;
+}
+
+.modal-box p {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    color: var(--text-muted, #64748b);
+}
+
+body.night-mode .modal-box p {
+    color: #94a3b8;
+}
+
+.modal-botones {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+}
+
+.modal-btn-cancelar {
+    background-color: var(--bg-input, #f1f5f9);
+    color: var(--text-main, #475569);
+}
+body.night-mode .modal-btn-cancelar{
+    background-color: #334155;
+    color: #cbd5e1;
+}
+.modal-btn-cancelar:hover { opacity: 0.9; }
+
+.modal-btn-confirmar {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+.modal-btn-confirmar:hover { background-color: #dc2626; }
+
+/* Deshabilitar botón mientras procesa */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
 /* ============================================
    CONTENIDO PRINCIPAL
    ============================================ */

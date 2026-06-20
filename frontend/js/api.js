@@ -1,7 +1,7 @@
 // Funciones de comunicación con el backend
 const API_URL = '/api/empleados';
 
-// Función para manejar respuestas no autorizadas
+// Función para manejar respuestas no autorizadas o expiradas
 async function handleResponse(response) {
     if (response.status === 401) {
         // Limpiar datos locales
@@ -17,10 +17,7 @@ async function handleResponse(response) {
 
 export async function obtenerEmpleados() {
     const resp = await fetch(API_URL);
-    if (resp.status === 401) {
-        window.location.href = '/';
-        throw new Error('Sesión expirada');
-    }
+    await handleResponse(resp);
     if (!resp.ok) throw new Error('Error al obtener empleados');
     return await resp.json();
 }
@@ -31,10 +28,7 @@ export async function crearEmpleado(empleado) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(empleado)
     });
-    if (resp.status === 401) {
-        window.location.href = '/';
-        throw new Error('Sesión expirada');
-    }
+    await handleResponse(resp);
     if (!resp.ok) {
         const data = await resp.json();
         throw new Error(data.errores ? data.errores.join(', ') : data.error || 'Error al crear');
@@ -48,10 +42,7 @@ export async function actualizarEmpleado(id, empleado) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(empleado)
     });
-    if (resp.status === 401) {
-        window.location.href = '/';
-        throw new Error('Sesión expirada');
-    }
+    await handleResponse(resp);
     if (!resp.ok) {
         const errorData = await resp.json().catch(() => ({}));
         throw new Error(errorData.error || errorData.errores?.join(', ') || 'Error al actualizar');
@@ -60,14 +51,16 @@ export async function actualizarEmpleado(id, empleado) {
 }
 
 export async function eliminarEmpleado(id) {
-    const resp = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    if (resp.status === 401) {
-        window.location.href = '/';
-        throw new Error('Sesión expirada');
-    }
+    // Las peticiones DELETE limpias no deben llevar "body" en configuraciones estándar
+    const resp = await fetch(`${API_URL}/${id}`, { 
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    await handleResponse(resp);
     if (!resp.ok && resp.status !== 204) {
         const errorData = await resp.json().catch(() => ({}));
         throw new Error(errorData.error || 'Error al eliminar');
     }
     return true;
 }
+

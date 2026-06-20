@@ -105,10 +105,11 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT /api/empleados/:id - Actualizar empleado (NO permite cambiar cédula)
+// PUT /api/empleados/:id - Actualizar empleado (Ignora y bloquea cambios de cédula)
 router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
+        // Forzamos a extraer solo los campos permitidos para la edición
         const { nombre, cargo, sueldo } = req.body;
 
         console.log('Actualizando empleado:', { id, nombre, cargo, sueldo });
@@ -118,12 +119,13 @@ router.put('/:id', async (req, res) => {
             return res.status(404).json({ error: 'Empleado no encontrado' });
         }
 
-        // Validaciones SOLO para campos editables (sin cédula)
+        // Validaciones SOLO para campos editables
         const errores = validarActualizacion({ nombre, cargo, sueldo });
         if (errores.length > 0) {
             return res.status(400).json({ errores });
         }
 
+        // Al pasar explícitamente solo estos campos, blindamos el archivo JSON
         const empleadoActualizado = await gestor.actualizarEmpleado(id, {
             nombre: nombre.trim(),
             cargo: cargo.trim(),

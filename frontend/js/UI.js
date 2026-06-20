@@ -1,5 +1,5 @@
-import Empleado from './Empleado.js';
 import { obtenerEmpleados, crearEmpleado, actualizarEmpleado, eliminarEmpleado } from './api.js';
+import Empleado from './Empleado.js';
 
 export default class UI {
     constructor(container) {
@@ -7,7 +7,7 @@ export default class UI {
         this.empleados = [];
         this.modoEdicion = false;
         this.idEditando = null;
-        this.filtroTexto = '';
+        this.procesandoFormulario = false; // Bandera para evitar el doble disparo síncrono
 
         this.initElementosDOM();
         this.registrarEventos();
@@ -15,130 +15,201 @@ export default class UI {
     }
 
     initElementosDOM() {
+        this.tablaBody = this.container.querySelector('#tablaBody');
+        this.buscador = this.container.querySelector('#buscador');
+        this.btnAgregarEmpleado = this.container.querySelector('#btnAgregarEmpleado');
+        
+        // Elementos del formulario
         this.form = this.container.querySelector('#empleadoForm');
         this.nombreInput = this.container.querySelector('#nombre');
         this.cedulaInput = this.container.querySelector('#cedula');
         this.cargoInput = this.container.querySelector('#cargo');
         this.sueldoInput = this.container.querySelector('#sueldo');
-        this.empleadoIdHidden = this.container.querySelector('#empleadoId');
-        this.tablaBody = this.container.querySelector('#tablaBody');
-        this.totalEmpleadosSpan = document.getElementById('totalEmpleados');
-        this.gastoTotalSpan = document.getElementById('gastoTotal');
         this.errorDiv = this.container.querySelector('#mensajeError');
-        this.buscadorInput = this.container.querySelector('#buscador');
-        this.btnCancelar = this.container.querySelector('#btnCancelar');
         this.formTitle = this.container.querySelector('#formTitle');
         this.btnGuardar = this.container.querySelector('#btnGuardar');
-        this.btnAgregar = this.container.querySelector('#btnAgregarEmpleado');
+        this.btnCancelar = this.container.querySelector('#btnCancelar');
+
+        // Elementos de Modales y Toasts globales del documento
+        this.toastContainer = document.getElementById('toast-container');
+        this.confirmModal = document.getElementById('confirm-modal');
+        this.confirmModalMsg = document.getElementById('confirm-modal-msg');
+        this.btnModalCancelar = document.getElementById('btn-modal-cancelar');
+        this.btnModalConfirmar = document.getElementById('btn-modal-confirmar');
     }
 
     registrarEventos() {
+        if (this.btnAgregarEmpleado) {
+            this.btnAgregarEmpleado.addEventListener('click', () => {
+                window.empleadoEditando = null;
+                window.cargarVista('empleado-form');
+            });
+        }
+
+        if (this.buscador) {
+            this.buscador.addEventListener('input', () => this.filtrarEmpleados());
+        }
+
         if (this.form) {
+            // Remover cualquier listener previo por si la vista se recargó de forma incorrecta
+            this.form.removeEventListener('submit', this.handleSubmit.bind(this));
             this.form.addEventListener('submit', this.handleSubmit.bind(this));
         }
+
         if (this.btnCancelar) {
             this.btnCancelar.addEventListener('click', this.cancelarEdicion.bind(this));
         }
-        if (this.buscadorInput) {
-            this.buscadorInput.addEventListener('input', (e) => {
-                this.filtroTexto = e.target.value.toLowerCase();
-                this.renderizarTabla();
-            });
-        }
-        if (this.btnAgregar) {
-            this.btnAgregar.addEventListener('click', () => {
-                window.empleadoEditando = null;
-                if (window.cargarVista) {
-                    window.cargarVista('empleado-form');
+
+        if (this.tablaBody) {
+            this.tablaBody.addEventListener('click', async (e) => {
+                const btnEdit = e.target.closest('.btn-editar');
+                const btnDelete = e.target.closest('.btn-eliminar');
+
+                if (btnEdit) {
+                    const id = btnEdit.getAttribute('data-id');
+                    this.prepararEdicion(id);
+                }
+
+                if (btnDelete) {
+                    const id = btnDelete.getAttribute('data-id');
+                    await this.manejarEliminacion(id);
                 }
             });
         }
     }
 
-    async cargarEmpleados() {
-        try {
-            this.empleados = await obtenerEmpleados();
-            this.renderizarTabla();
-            this.actualizarEstadisticas();
-            this.resetearFormulario();
-        } catch (error) {
-            if (error.message === 'Sesión expirada') return;
-            this.mostrarError('Error al cargar empleados: ' + error.message);
-        }
+    lanzarToast(mensaje, tipo = 'info') {
+        if (!this.toastContainer) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast-alerta ${tipo}`;
+        
+        let icono = 'ℹ️';
+        if (tipo === 'exito') icono = '✅';
+        if (tipo === 'error') icono = '❌';
+
+        toast.innerHTML = `<span>${icono}</span> <span>${mensaje}</span>`;
+        this.toastContainer.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('mostrar'), 10);
+
+        setTimeout(() => {
+            toast.classList.remove('mostrar');
+            toast.addEventListener('transitionend', () => toast.remove());
+        }, 3000);
     }
 
-    resetearFormulario() {
-        if (!this.form) return;
-        this.form.reset();
-        if (this.empleadoIdHidden) this.empleadoIdHidden.value = '';
-        if (this.cedulaInput) {
-            this.cedulaInput.readOnly = false;
-            this.cedulaInput.style.backgroundColor = '';
-            this.cedulaInput.style.color = '';
-            this.cedulaInput.style.cursor = '';
-        }
-        this.modoEdicion = false;
-        this.idEditando = null;
-        if (this.formTitle) this.formTitle.textContent = 'Registrar Empleado';
-        if (this.btnGuardar) this.btnGuardar.textContent = 'Guardar';
-        if (this.btnCancelar) this.btnCancelar.style.display = 'none';
-        this.limpiarError();
-        // Asegurar que todos los inputs estén habilitados
-        const inputs = this.form.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.disabled = false;
-            if (input.id === 'cedula') input.readOnly = false;
+    mostrarConfirmacionModal(mensaje) {
+        return new Promise((resolve) => {
+            if (!this.confirmModal) return resolve(false);
+
+            this.confirmModalMsg.textContent = mensaje;
+            this.confirmModal.classList.add('activo');
+
+            const limpiarEventos = () => {
+                this.btnModalConfirmar.removeEventListener('click', alConfirmar);
+                this.btnModalCancelar.removeEventListener('click', alCancelar);
+                this.confirmModal.classList.remove('activo');
+            };
+
+            const alConfirmar = () => { limpiarEventos(); resolve(true); };
+            const alCancelar = () => { limpiarEventos(); resolve(false); };
+
+            this.btnModalConfirmar.addEventListener('click', alConfirmar);
+            this.btnModalCancelar.addEventListener('click', alCancelar);
         });
     }
 
-    renderizarTabla() {
+    async cargarEmpleados() {
         if (!this.tablaBody) return;
-        const empleadosFiltrados = this.filtrarEmpleados();
-        if (empleadosFiltrados.length === 0) {
-            this.tablaBody.innerHTML = '<tr class="fila-vacia"><td colspan="5">No hay empleados registrados</td></tr>';
+        try {
+            this.empleados = await obtenerEmpleados();
+            this.renderizarTabla(this.empleados);
+        } catch (error) {
+            this.mostrarMensajeTabla(`❌ Error al cargar: ${error.message}`);
+            this.lanzarToast(error.message, 'error');
+        }
+    }
+
+    renderizarTabla(lista) {
+        if (!this.tablaBody) return;
+        this.tablaBody.innerHTML = '';
+
+        if (lista.length === 0) {
+            this.mostrarMensajeTabla('No se encontraron empleados.');
             return;
         }
 
-        this.tablaBody.innerHTML = empleadosFiltrados.map(emp => `
-            <tr data-id="${emp.id}">
-                <td>${this.escapeHtml(emp.nombre)}</td>
-                <td>${this.escapeHtml(emp.cedula)}</td>
-                <td>${this.escapeHtml(emp.cargo)}</td>
-                <td>${Number(emp.sueldo).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs</td>
+        lista.forEach(emp => {
+            const tr = document.createElement('tr');
+            const sueldoNum = Number(emp.sueldo) || 0; 
+            
+            tr.innerHTML = `
+                <td><strong>${emp.nombre}</strong></td>
+                <td>${emp.cedula}</td>
+                <td>${emp.cargo}</td>
+                <td>${sueldoNum.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs</td>
                 <td>
-                    <button class="btn-edit" data-id="${emp.id}">✏️ Editar</button>
-                    <button class="btn-delete" data-id="${emp.id}">🗑️ Eliminar</button>
+                    <button class="btn-edit btn-editar" data-id="${emp.id}">✏️ Editar</button>
+                    <button class="btn-delete btn-eliminar" data-id="${emp.id}">🗑️ Eliminar</button>
                 </td>
-            </tr>
-        `).join('');
+            `;
+            this.tablaBody.appendChild(tr);
+        });
+    }
 
-        this.tablaBody.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => this.editarEmpleado(btn.dataset.id));
-        });
-        this.tablaBody.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', () => this.eliminarEmpleado(btn.dataset.id));
-        });
+    mostrarMensajeTabla(mensaje) {
+        if (this.tablaBody) {
+            this.tablaBody.innerHTML = `<tr class="fila-vacia"><td colspan="5">${mensaje}</td></tr>`;
+        }
     }
 
     filtrarEmpleados() {
-        if (!this.filtroTexto) return this.empleados;
-        return this.empleados.filter(emp =>
-            emp.cedula.toLowerCase().includes(this.filtroTexto) ||
-            emp.nombre.toLowerCase().includes(this.filtroTexto)
+        const query = this.buscador.value.toLowerCase().trim();
+        const filtrados = this.empleados.filter(emp => 
+            emp.nombre.toLowerCase().includes(query) || 
+            emp.cedula.toLowerCase().includes(query)
         );
+        this.renderizarTabla(filtrados);
     }
 
-    actualizarEstadisticas() {
-        const total = this.empleados.length;
-        const sumaSueldos = this.empleados.reduce((acc, emp) => acc + Number(emp.sueldo), 0);
-        if (this.totalEmpleadosSpan) this.totalEmpleadosSpan.textContent = total;
-        if (this.gastoTotalSpan) {
-            this.gastoTotalSpan.textContent = sumaSueldos.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Bs';
+    async manejarEliminacion(id) {
+        if (!id || id === 'undefined') {
+            this.lanzarToast('ID inválido detectado para la eliminación.', 'error');
+            return;
+        }
+
+        const emp = this.empleados.find(e => e.id === id);
+        const nombreEmp = emp ? emp.nombre : 'este empleado';
+
+        const confirmado = await this.mostrarConfirmacionModal(`¿Estás seguro de que deseas eliminar a ${nombreEmp}?`);
+        
+        if (confirmado) {
+            try {
+                await eliminarEmpleado(id);
+                this.empleados = this.empleados.filter(e => e.id !== id);
+                this.renderizarTabla(this.empleados);
+                this.lanzarToast(`${nombreEmp} eliminado correctamente`, 'exito');
+            } catch (error) {
+                this.lanzarToast('Error al eliminar: ' + error.message, 'error');
+            }
+        }
+    }
+
+    prepararEdicion(id) {
+        const emp = this.empleados.find(e => e.id === id);
+        if (emp) {
+            window.empleadoEditando = emp;
+            window.cargarVista('empleado-form');
         }
     }
 
     async handleSubmit(event) {
         event.preventDefault();
+        
+        // CONTROL CRÍTICO: Si ya se está procesando una petición, frenamos el doble envío
+        if (this.procesandoFormulario) return;
+
         this.limpiarError();
 
         let datos = {};
@@ -164,6 +235,7 @@ export default class UI {
         if (errorSueldo) errores.push(errorSueldo);
         const errorCargo = Empleado.validarCargo(datos.cargo);
         if (errorCargo) errores.push(errorCargo);
+        
         if (!this.modoEdicion) {
             const errorCedula = Empleado.validarCedula(datos.cedula);
             if (errorCedula) errores.push(errorCedula);
@@ -171,115 +243,74 @@ export default class UI {
 
         if (errores.length > 0) {
             this.mostrarError(errores.join('. '));
+            this.lanzarToast('Revisa los errores en el formulario', 'error');
             return;
         }
 
         try {
+            // Activamos bandera de procesamiento y bloqueamos el botón
+            this.procesandoFormulario = true;
+            if (this.btnGuardar) this.btnGuardar.disabled = true;
+
             if (this.modoEdicion && this.idEditando) {
-                await actualizarEmpleado(this.idEditando, datos);
-                this.mostrarExito('Empleado actualizado correctamente');
+                const empleadoEditado = await actualizarEmpleado(this.idEditando, datos);
+                const index = this.empleados.findIndex(emp => emp.id === this.idEditando);
+                if (index !== -1) {
+                    this.empleados[index] = empleadoEditado;
+                }
+                this.lanzarToast('Empleado actualizado correctamente', 'exito');
             } else {
-                await crearEmpleado(datos);
-                this.mostrarExito('Empleado registrado correctamente');
+                const nuevoEmpleado = await crearEmpleado(datos);
+                this.empleados.push(nuevoEmpleado);
+                this.lanzarToast('Empleado registrado correctamente', 'exito');
             }
+            
             window.empleadoEditando = null;
-            this.cancelarEdicion(); // Navega a empleados y recarga
+            this.cancelarEdicion();
         } catch (error) {
             this.mostrarError(error.message);
-        }
-    }
-
-    async editarEmpleado(id) {
-        const empleado = this.empleados.find(emp => emp.id === id);
-        if (!empleado) return;
-        window.empleadoEditando = empleado;
-        if (window.cargarVista) {
-            window.cargarVista('empleado-form');
+            this.lanzarToast(error.message, 'error');
+        } finally {
+            // Liberamos el formulario una vez termine de responder el backend
+            this.procesandoFormulario = false;
+            if (this.btnGuardar) this.btnGuardar.disabled = false;
         }
     }
 
     cancelarEdicion() {
+        this.resetearFormulario();
+        window.cargarVista('empleados');
+    }
+
+    resetearFormulario() {
         this.modoEdicion = false;
         this.idEditando = null;
+        window.empleadoEditando = null;
         if (this.form) this.form.reset();
-        if (this.empleadoIdHidden) this.empleadoIdHidden.value = '';
-        if (this.formTitle) this.formTitle.textContent = 'Registrar Empleado';
-        if (this.btnGuardar) this.btnGuardar.textContent = 'Guardar';
-        if (this.btnCancelar) this.btnCancelar.style.display = 'none';
         if (this.cedulaInput) {
             this.cedulaInput.readOnly = false;
             this.cedulaInput.style.backgroundColor = '';
             this.cedulaInput.style.color = '';
             this.cedulaInput.style.cursor = '';
         }
+        if (this.formTitle) this.formTitle.textContent = 'Registrar Empleado';
+        if (this.btnGuardar) this.btnGuardar.textContent = 'Guardar';
+        if (this.btnCancelar) this.btnCancelar.style.display = 'none';
         this.limpiarError();
-        window.empleadoEditando = null;
-        if (window.cargarVista) {
-            window.cargarVista('empleados');
-        }
-    }
-
-    async eliminarEmpleado(id) {
-        const empleado = this.empleados.find(emp => emp.id === id);
-        if (!empleado) return;
-        if (!confirm(`¿Eliminar a "${empleado.nombre}"?`)) return;
-
-        try {
-            await eliminarEmpleado(id);
-            this.mostrarExito('Empleado eliminado');
-            await this.cargarEmpleados(); // Recarga la lista
-        } catch (error) {
-            if (error.message === 'Sesión expirada') return;
-            this.mostrarError('Error al eliminar: ' + error.message);
-        }
     }
 
     mostrarError(mensaje) {
-        if (!this.errorDiv) {
-            alert('❌ ' + mensaje);
-            return;
+        if (this.errorDiv) {
+            this.errorDiv.textContent = mensaje;
+            this.errorDiv.style.display = 'block';
         }
-        this.errorDiv.textContent = mensaje;
-        this.errorDiv.style.display = 'block';
-        setTimeout(() => {
-            if (this.errorDiv) {
-                this.errorDiv.style.display = 'none';
-            }
-        }, 5000);
-    }
-
-    mostrarExito(mensaje) {
-        const notif = document.createElement('div');
-        notif.textContent = mensaje;
-        Object.assign(notif.style, {
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            background: '#10b981',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: '30px',
-            fontWeight: 'bold',
-            zIndex: '1000',
-            fontFamily: 'Inter, sans-serif'
-        });
-        document.body.appendChild(notif);
-        setTimeout(() => notif.remove(), 3000);
     }
 
     limpiarError() {
         if (this.errorDiv) {
-            this.errorDiv.style.display = 'none';
             this.errorDiv.textContent = '';
+            this.errorDiv.style.display = 'none';
         }
     }
-
-    escapeHtml(str) {
-        return str.replace(/[&<>]/g, m => {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
 }
+
