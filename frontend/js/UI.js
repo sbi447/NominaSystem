@@ -248,7 +248,7 @@ export default class UI {
         }
 
         try {
-            // Activamos bandera de procesamiento y bloqueamos el botón
+            // On bandera de procesamiento y bloq botón
             this.procesandoFormulario = true;
             if (this.btnGuardar) this.btnGuardar.disabled = true;
 
@@ -271,7 +271,7 @@ export default class UI {
             this.mostrarError(error.message);
             this.lanzarToast(error.message, 'error');
         } finally {
-            // Liberamos el formulario una vez termine de responder el backend
+            // Unblock formulario una vez termine de responder el backend
             this.procesandoFormulario = false;
             if (this.btnGuardar) this.btnGuardar.disabled = false;
         }

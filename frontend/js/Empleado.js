@@ -1,4 +1,4 @@
-// Clase modelo para Empleado (validaciones centralizadas)
+// Clase modelo para Empleado
 export default class Empleado {
     constructor(nombre, cedula, cargo, sueldo, id = null) {
         this.id = id;
@@ -8,7 +8,7 @@ export default class Empleado {
         this.sueldo = sueldo;
     }
 
-    // Validaciones estáticas reutilizables
+    // Validaciones estáticas
     static validarNombre(nombre) {
         if (!nombre || nombre.trim() === '') return 'El nombre completo es obligatorio';
         if (nombre.trim().split(/\s+/).length < 2) return 'Debe incluir nombre y apellido';

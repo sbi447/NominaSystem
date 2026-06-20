@@ -51,7 +51,7 @@ export async function actualizarEmpleado(id, empleado) {
 }
 
 export async function eliminarEmpleado(id) {
-    // Las peticiones DELETE limpias no deben llevar "body" en configuraciones estándar
+
     const resp = await fetch(`${API_URL}/${id}`, { 
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
