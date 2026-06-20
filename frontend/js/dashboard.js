@@ -2,7 +2,7 @@ import UI from './UI.js';
 import { obtenerEmpleados } from './api.js';
 
 let uiInstance = null;
-let currentView = 'estadisticas';
+let currentView = 'empleados';
 
 window.cargarVista = cargarVista;
 
@@ -56,6 +56,7 @@ function initEmpleados(container) {
         uiInstance.initElementosDOM();
         uiInstance.registrarEventos();
         uiInstance.cargarEmpleados();
+        uiInstance.resetearFormulario();
     } else {
         uiInstance = new UI(container);
     }
@@ -94,13 +95,7 @@ function initEmpleadoForm(container) {
     const errorDiv = container.querySelector('#mensajeError');
     const cancelBtn = container.querySelector('#btnCancelar');
 
-    // Asegurar que el botón cancelar esté visible siempre
-    if (cancelBtn) {
-        cancelBtn.style.display = 'inline-block';
-    }
-
     if (empleado) {
-        // Modo edición
         const nombreInput = container.querySelector('#nombre');
         const cedulaInput = container.querySelector('#cedula');
         const cargoInput = container.querySelector('#cargo');
@@ -122,6 +117,7 @@ function initEmpleadoForm(container) {
         if (idHidden) idHidden.value = empleado.id;
         if (formTitle) formTitle.textContent = 'Editar Empleado';
         if (guardarBtn) guardarBtn.textContent = 'Actualizar';
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
 
         if (uiInstance) {
             uiInstance.container = container;
@@ -148,34 +144,18 @@ function initEmpleadoForm(container) {
             }
         }
     } else {
-        // Modo creación
         if (uiInstance) {
             uiInstance.container = container;
             uiInstance.initElementosDOM();
             uiInstance.registrarEventos();
-            // Resetear formulario a estado de creación
-            if (uiInstance.form) uiInstance.form.reset();
-            if (uiInstance.formTitle) uiInstance.formTitle.textContent = 'Registrar Empleado';
-            if (uiInstance.btnGuardar) uiInstance.btnGuardar.textContent = 'Guardar';
-            if (uiInstance.btnCancelar) uiInstance.btnCancelar.style.display = 'inline-block';
-            if (uiInstance.cedulaInput) {
-                uiInstance.cedulaInput.readOnly = false;
-                uiInstance.cedulaInput.style.backgroundColor = '';
-                uiInstance.cedulaInput.style.color = '';
-                uiInstance.cedulaInput.style.cursor = '';
-            }
-            uiInstance.modoEdicion = false;
-            uiInstance.idEditando = null;
-            if (uiInstance.empleadoIdHidden) uiInstance.empleadoIdHidden.value = '';
-            uiInstance.limpiarError();
-            // Asegurar que el botón cancelar tenga el evento
-            if (cancelBtn) {
-                cancelBtn.removeEventListener('click', uiInstance.cancelarEdicion);
-                cancelBtn.addEventListener('click', uiInstance.cancelarEdicion.bind(uiInstance));
-            }
+            uiInstance.resetearFormulario();
             if (form) {
                 form.removeEventListener('submit', uiInstance.handleSubmit);
                 form.addEventListener('submit', uiInstance.handleSubmit.bind(uiInstance));
+            }
+            if (cancelBtn) {
+                cancelBtn.removeEventListener('click', uiInstance.cancelarEdicion);
+                cancelBtn.addEventListener('click', uiInstance.cancelarEdicion.bind(uiInstance));
             }
         }
     }
@@ -275,5 +255,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupNavigation();
     setupModos();
     setupLogout();
-    cargarVista('estadisticas');
+    cargarVista('empleados');
 });

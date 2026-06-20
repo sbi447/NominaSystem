@@ -109,7 +109,35 @@
     overflow-y: auto;
 }
 
+/* Logo container */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
 
+.logo {
+    height: 60px; /* Ajusta según tu logo */
+    width: auto;
+    display: block;
+}
+
+/* Por defecto (modo claro) mostrar el logo light, ocultar el dark */
+.logo-dark {
+    display: none;
+}
+.logo-light {
+    display: block;
+}
+
+/* Modo oscuro: mostrar el logo dark, ocultar el light */
+body.night-mode .logo-light {
+    display: none;
+}
+body.night-mode .logo-dark {
+    display: block;
+}
 
 /* ============================================
    MODO OSCURO (se activa con body.night-mode)

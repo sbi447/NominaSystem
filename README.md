@@ -135,8 +135,8 @@ http://localhost:3000
 
 | Campo | Valor |
 |-------|-------|
-| **Correo electrónico** | `sistemadenomina4@gmail.com` |
-| **Contraseña** | `linuxesmejorquewindows11` |
+| **Correo electrónico** | `sysnom@gmail.com` |
+| **Contraseña** | `linux123` |
 
 ---
 

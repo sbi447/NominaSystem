@@ -1,16 +1,38 @@
 [
   {
-    "id": "1780794369401-7mpf7",
-    "nombre": "Sebastian Briceño",
-    "cedula": "V-32117825",
-    "cargo": "Programador Junior",
-    "sueldo": 30000
+    "id": "1781923052516-m7tp6",
+    "nombre": "Consuelo Marta",
+    "cedula": "V-485148",
+    "cargo": "Camaera",
+    "sueldo": 15000,
+    "fecha": "2026-06-20T02:37:32.516Z"
   },
   {
-    "id": "1780794566547-6xguq",
-    "nombre": "Claudia Montilla",
-    "cedula": "V-33711805",
-    "cargo": "UI Designer",
-    "sueldo": 25000
+    "id": "1781923291372-uoy6u",
+    "nombre": "Andrew Maccalister",
+    "cedula": "V-7788778",
+    "cargo": "Desarrollador",
+    "sueldo": 18000
+  },
+  {
+    "id": "1781923719351-8kd68",
+    "nombre": "Lucena Mendoza",
+    "cedula": "V-123211",
+    "cargo": "Dev",
+    "sueldo": 15000
+  },
+  {
+    "id": "1781923751996-6i28s",
+    "nombre": "Camila Descabello",
+    "cedula": "E-918819",
+    "cargo": "Singer",
+    "sueldo": 187440
+  },
+  {
+    "id": "1781927154724-ktqxi",
+    "nombre": "Ana Rodriguez",
+    "cedula": "V-32117825",
+    "cargo": "Liker",
+    "sueldo": 78000
   }
 ]

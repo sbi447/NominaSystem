@@ -58,32 +58,38 @@ h2 {
     background: #cbd5e1;
 }
 
+/* Botón Editar - Azul acero sobrio */
 .btn-edit {
-    background: #fbbf24;
-    color: #78350f;
-    padding: 0.4rem 0.8rem;
+    background: #e2e8f0;
+    color: #2c3e50;
+    padding: 0.4rem 0.9rem;
     border-radius: 1.5rem;
     font-weight: 500;
-    border: none;
+    border: 1px solid #cbd5e1;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s;
 }
 .btn-edit:hover {
-    background: #f59e0b;
+    background: #cbd5e1;
+    border-color: #94a3b8;
+    transform: translateY(-1px);
 }
 
+/* Botón Eliminar - Rojo apagado/granate */
 .btn-delete {
-    background: #ef4444;
-    color: white;
-    padding: 0.4rem 0.8rem;
+    background: #f1f5f9;
+    color: #991b1b;
+    padding: 0.4rem 0.9rem;
     border-radius: 1.5rem;
     font-weight: 500;
-    border: none;
+    border: 1px solid #fecaca;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s;
 }
 .btn-delete:hover {
-    background: #dc2626;
+    background: #fee2e2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
 }
 
 .btn-full {

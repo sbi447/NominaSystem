@@ -60,16 +60,40 @@ export default class UI {
             this.empleados = await obtenerEmpleados();
             this.renderizarTabla();
             this.actualizarEstadisticas();
+            this.resetearFormulario();
         } catch (error) {
             if (error.message === 'Sesión expirada') return;
             this.mostrarError('Error al cargar empleados: ' + error.message);
         }
     }
 
-    renderizarTabla() {
-        const empleadosFiltrados = this.filtrarEmpleados();
-        if (!this.tablaBody) return;
+    resetearFormulario() {
+        if (!this.form) return;
+        this.form.reset();
+        if (this.empleadoIdHidden) this.empleadoIdHidden.value = '';
+        if (this.cedulaInput) {
+            this.cedulaInput.readOnly = false;
+            this.cedulaInput.style.backgroundColor = '';
+            this.cedulaInput.style.color = '';
+            this.cedulaInput.style.cursor = '';
+        }
+        this.modoEdicion = false;
+        this.idEditando = null;
+        if (this.formTitle) this.formTitle.textContent = 'Registrar Empleado';
+        if (this.btnGuardar) this.btnGuardar.textContent = 'Guardar';
+        if (this.btnCancelar) this.btnCancelar.style.display = 'none';
+        this.limpiarError();
+        // Asegurar que todos los inputs estén habilitados
+        const inputs = this.form.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.disabled = false;
+            if (input.id === 'cedula') input.readOnly = false;
+        });
+    }
 
+    renderizarTabla() {
+        if (!this.tablaBody) return;
+        const empleadosFiltrados = this.filtrarEmpleados();
         if (empleadosFiltrados.length === 0) {
             this.tablaBody.innerHTML = '<tr class="fila-vacia"><td colspan="5">No hay empleados registrados</td></tr>';
             return;
@@ -89,14 +113,10 @@ export default class UI {
         `).join('');
 
         this.tablaBody.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.editarEmpleado(btn.dataset.id);
-            });
+            btn.addEventListener('click', () => this.editarEmpleado(btn.dataset.id));
         });
         this.tablaBody.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', () => {
-                this.eliminarEmpleado(btn.dataset.id);
-            });
+            btn.addEventListener('click', () => this.eliminarEmpleado(btn.dataset.id));
         });
     }
 
@@ -162,9 +182,8 @@ export default class UI {
                 await crearEmpleado(datos);
                 this.mostrarExito('Empleado registrado correctamente');
             }
-            // Limpiar y navegar a empleados
             window.empleadoEditando = null;
-            this.cancelarEdicion();
+            this.cancelarEdicion(); // Navega a empleados y recarga
         } catch (error) {
             this.mostrarError(error.message);
         }
@@ -180,13 +199,20 @@ export default class UI {
     }
 
     cancelarEdicion() {
-        // Limpiar estado interno
         this.modoEdicion = false;
         this.idEditando = null;
-        // No resetear el formulario ni cambiar títulos porque la vista va a desaparecer
-        // Limpiar error
+        if (this.form) this.form.reset();
+        if (this.empleadoIdHidden) this.empleadoIdHidden.value = '';
+        if (this.formTitle) this.formTitle.textContent = 'Registrar Empleado';
+        if (this.btnGuardar) this.btnGuardar.textContent = 'Guardar';
+        if (this.btnCancelar) this.btnCancelar.style.display = 'none';
+        if (this.cedulaInput) {
+            this.cedulaInput.readOnly = false;
+            this.cedulaInput.style.backgroundColor = '';
+            this.cedulaInput.style.color = '';
+            this.cedulaInput.style.cursor = '';
+        }
         this.limpiarError();
-        // Navegar a empleados
         window.empleadoEditando = null;
         if (window.cargarVista) {
             window.cargarVista('empleados');
@@ -201,7 +227,7 @@ export default class UI {
         try {
             await eliminarEmpleado(id);
             this.mostrarExito('Empleado eliminado');
-            await this.cargarEmpleados();
+            await this.cargarEmpleados(); // Recarga la lista
         } catch (error) {
             if (error.message === 'Sesión expirada') return;
             this.mostrarError('Error al eliminar: ' + error.message);
@@ -209,11 +235,16 @@ export default class UI {
     }
 
     mostrarError(mensaje) {
-        if (!this.errorDiv) return;
+        if (!this.errorDiv) {
+            alert('❌ ' + mensaje);
+            return;
+        }
         this.errorDiv.textContent = mensaje;
         this.errorDiv.style.display = 'block';
         setTimeout(() => {
-            this.errorDiv.style.display = 'none';
+            if (this.errorDiv) {
+                this.errorDiv.style.display = 'none';
+            }
         }, 5000);
     }
 
