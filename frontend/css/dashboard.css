@@ -437,15 +437,18 @@ body.night-mode .form-actions .btn-secondary:hover {
 /* Botones dentro de tablas */
 body.night-mode .btn-edit {
     background: #4A4A4A;
+    border: 1px solid #D4AF37;
     color: #D4AF37;
 }
 body.night-mode .btn-edit:hover {
     background: #D4AF37;
+    border: 1px solid #4A4A4A;
     color: #1A1A1A;
 }
 body.night-mode .btn-delete {
     background: #4A4A4A;
-    color: #E5A96E;
+    border: 1px solid #E57353;
+    color: #FFB167;
 }
 body.night-mode .btn-delete:hover {
     background: #E5A96E;

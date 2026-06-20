@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -8,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Secreto para firmar los JWT (en producción usar variable de entorno)
-const JWT_SECRET = 'mi-secreto-super-seguro-para-nomina-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middlewares
 app.use(express.json());

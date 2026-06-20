@@ -70,7 +70,7 @@ h2 {
     transition: all 0.2s;
 }
 .btn-edit:hover {
-    background: #cbd5e1;
+    background: #CADAFF;
     border-color: #94a3b8;
     transform: translateY(-1px);
 }

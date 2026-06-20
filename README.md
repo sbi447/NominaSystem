@@ -118,7 +118,9 @@ cd NominaSystem
 # 3. Instalar dependencias
 npm install
 
-# 4. Ejecutar el servidor
+# 4. Modificar .env.example a .env
+
+# 5. Ejecutar el servidor
 npm run dev      # Modo desarrollo (con nodemon)
 # o
 npm start        # Modo producción
